@@ -28,7 +28,7 @@ const fileToDataUrl = (file) => file ? new Promise((resolve, reject) => { const 
 function renderNews() {
   const visible = news.filter((item) => currentFilter === 'Tous' || item.category === currentFilter);
   $('#newsGrid').innerHTML = visible.map((item) => `
-    <article class="news-card">${item.image ? `<img class="news-image" src="${item.image.url}" alt="${escapeHtml(item.title)}">` : ''}<div class="news-meta"><span>${escapeHtml(item.category)}</span><span>${formatDate(item.date)}</span></div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.excerpt)}</p>${item.attachment ? `<a class="news-link" href="${item.attachment.url}" download="${escapeHtml(item.attachment.name)}">Telecharger la piece jointe &nbsp;↓</a>` : '<span class="news-link">Actualite du CVL &nbsp;→</span>'}</article>`).join('');
+    <article class="news-card">${item.image ? `<button class="image-button" type="button" data-image="${item.image.url}" data-title="${escapeHtml(item.title)}" aria-label="Voir l'image en grand : ${escapeHtml(item.title)}"><img class="news-image" src="${item.image.url}" alt="${escapeHtml(item.title)}"></button>` : ''}<div class="news-meta"><span>${escapeHtml(item.category)}</span><span>${formatDate(item.date)}</span></div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.excerpt)}</p>${item.attachment ? `<a class="news-link" href="${item.attachment.url}" download="${escapeHtml(item.attachment.name)}" target="_blank" rel="noopener">Ouvrir le fichier &nbsp;↓</a>` : '<span class="news-link">Actualite du CVL &nbsp;→</span>'}</article>`).join('');
   $('#emptyState').classList.toggle('hidden', visible.length > 0);
 }
 function renderAdminList() {
@@ -52,6 +52,12 @@ function resetScheduleForm() { $('#scheduleForm').reset(); $('#scheduleEditId').
 $('#adminOpen').addEventListener('click', openAdmin);
 $('#adminClose').addEventListener('click', closeAdmin);
 $('#adminModal').addEventListener('click', (event) => { if (event.target.id === 'adminModal') closeAdmin(); });
+const imageLightbox = $('#imageLightbox');
+const closeImageLightbox = () => { imageLightbox.classList.add('hidden'); $('#lightboxImage').src = ''; };
+$('#newsGrid').addEventListener('click', (event) => { const button = event.target.closest('[data-image]'); if (!button) return; $('#lightboxImage').src = button.dataset.image; $('#lightboxImage').alt = button.dataset.title; $('#lightboxTitle').textContent = button.dataset.title; imageLightbox.classList.remove('hidden'); });
+$('#lightboxClose').addEventListener('click', closeImageLightbox);
+imageLightbox.addEventListener('click', (event) => { if (event.target === imageLightbox) closeImageLightbox(); });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closeImageLightbox(); if (!$('#adminModal').classList.contains('hidden')) closeAdmin(); } });
 $('#loginForm').addEventListener('submit', (event) => { event.preventDefault(); const role = $('#adminRole').value; const [expectedUser, expectedPassword] = credentials[role]; if ($('#username').value.trim() === expectedUser && $('#password').value === expectedPassword) { $('#loginError').textContent = ''; showDashboard(role); } else { $('#loginError').textContent = 'Identifiant ou mot de passe incorrect.'; } });
 $('#logoutButton').addEventListener('click', () => { resetForm(); resetScheduleForm(); $('#adminView').classList.add('hidden'); $('#loginView').classList.remove('hidden'); $('#username').value = ''; $('#password').value = ''; });
 $('#newsForm').addEventListener('submit', async (event) => { event.preventDefault(); const editId = Number($('#editId').value); const previous = news.find((item) => item.id === editId); const [image, attachment] = await Promise.all([fileToDataUrl($('#newsImage').files[0]), fileToDataUrl($('#newsAttachment').files[0])]); const article = { id: editId || Date.now(), title: $('#newsTitle').value.trim(), category: $('#newsCategory').value, date: $('#newsDate').value, excerpt: $('#newsExcerpt').value.trim(), image: image || previous?.image || null, attachment: attachment || previous?.attachment || null }; news = editId ? news.map((item) => item.id === editId ? article : item) : [article, ...news]; saveNews(); renderNews(); renderAdminList(); resetForm(); });
