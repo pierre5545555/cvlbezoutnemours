@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Les actualites du CVL du lycee Etienne Bezout de Nemours.">
+  <title>CVL Etienne Bezout | Actualites</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="Accueil du CVL">
+        <img class="school-logo" src="logo-bezout.png.png" alt="Logo du lycee Etienne Bezout de Nemours">
+        <span><strong>Etienne Bezout</strong><small>Lycee de Nemours</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a href="#actualites">Actualites</a>
+        <a href="#agenda">Agenda</a>
+        <button class="admin-link" id="adminOpen">Espace administrateur</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Conseil de la vie lyceenne</p>
+        <h1>La vie du lycee,<br><em>c'est vous.</em></h1>
+        <p class="hero-text">Retrouvez les projets, les rendez-vous et les nouvelles du CVL Etienne Bezout.</p>
+        <a class="primary-button" href="#actualites">Decouvrir les actualites <span>↓</span></a>
+      </div>
+      <div class="hero-note"><span>01</span><p>Un espace pour<br>les idees qui<br>font bouger<br>le lycee.</p></div>
+    </section>
+
+    <section class="section news-section" id="actualites">
+      <div class="section-heading">
+        <div><p class="eyebrow">En ce moment</p><h2>Les actualites</h2></div>
+        <p class="section-intro">Les informations partagees par le CVL pour toute la communaute scolaire.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filtrer les actualites">
+        <button class="filter active" data-filter="Tous">Tout</button>
+        <button class="filter" data-filter="Evenement">Evenements</button>
+        <button class="filter" data-filter="Projet">Projets</button>
+        <button class="filter" data-filter="Information">Informations</button>
+      </div>
+      <div class="news-grid" id="newsGrid"></div>
+      <p class="empty-state hidden" id="emptyState">Aucune actualite dans cette rubrique.</p>
+    </section>
+
+    <section class="section agenda-section" id="agenda">
+      <div class="section-heading"><div><p class="eyebrow">Cette semaine au lycee</p><h2>L'emploi du temps des activites</h2></div><p class="section-intro">Retrouvez les activites proposees par le CVL, jour par jour.</p></div>
+      <div class="week-picker"><button class="icon-button" id="previousWeek" aria-label="Semaine precedente">←</button><strong id="weekLabel"></strong><button class="icon-button" id="nextWeek" aria-label="Semaine suivante">→</button></div>
+      <div class="schedule" id="scheduleGrid"></div>
+    </section>
+  </main>
+
+  <footer><div class="footer-inner"><strong>CVL Etienne Bezout</strong><span>Construisons le lycee de demain.</span><span>Nemours · 2026</span></div></footer>
+
+  <div class="modal-backdrop hidden" id="adminModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <button class="modal-close" id="adminClose" aria-label="Fermer">×</button>
+      <div id="loginView"><p class="eyebrow">Acces reserve</p><h2 id="modalTitle">Espace administrateur</h2><p class="modal-copy">Choisissez votre espace puis connectez-vous pour gerer le site.</p><form id="loginForm"><label for="adminRole">Espace</label><select id="adminRole"><option value="cpe">CPE</option><option value="vie-scolaire">Vie scolaire</option><option value="general">Administration generale</option></select><label for="username">Identifiant</label><input id="username" required placeholder="Votre identifiant" autocomplete="username"><label for="password">Mot de passe</label><input id="password" type="password" required placeholder="Mot de passe" autocomplete="current-password"><p class="form-error" id="loginError"></p><button class="primary-button full" type="submit">Se connecter</button></form><small class="demo-hint">CPE : <b>cpe.CVL.bezout</b> · Vie scolaire : <b>viesco.CVL.bezout</b> · General : <b>CVL.bezout/admin</b><br>Mot de passe commun : <b>CVLbezout2026</b></small></div>
+      <div class="hidden" id="adminView"><div class="admin-title"><div><p class="eyebrow" id="adminRoleLabel">Tableau de bord</p><h2>Gerer le site</h2></div><button class="text-button" id="logoutButton">Se deconnecter</button></div><h3 class="admin-section-title">Actualites</h3><form id="newsForm"><input type="hidden" id="editId"><label for="newsTitle">Titre</label><input id="newsTitle" required placeholder="Titre de l'actualite"><div class="form-row"><div><label for="newsCategory">Categorie</label><select id="newsCategory"><option>Evenement</option><option>Projet</option><option>Information</option></select></div><div><label for="newsDate">Date</label><input id="newsDate" type="date" required></div></div><label for="newsExcerpt">Resume</label><textarea id="newsExcerpt" rows="3" required placeholder="Quelques mots pour donner envie de lire..."></textarea><div class="form-row"><div><label for="newsImage">Photo (facultatif)</label><input id="newsImage" type="file" accept="image/*"></div><div><label for="newsAttachment">Piece jointe (facultatif)</label><input id="newsAttachment" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"></div></div><div class="form-actions"><button class="text-button hidden" id="cancelEdit" type="button">Annuler la modification</button><button class="primary-button" type="submit">Publier l'actualite</button></div></form><div class="admin-list" id="adminList"></div><h3 class="admin-section-title">Emploi du temps</h3><form id="scheduleForm"><input type="hidden" id="scheduleEditId"><label for="scheduleTitle">Activite</label><input id="scheduleTitle" required placeholder="Ex : Atelier musique"><div class="form-row"><div><label for="scheduleDate">Date</label><input id="scheduleDate" type="date" required></div><div><label for="scheduleTime">Horaire</label><input id="scheduleTime" required placeholder="12h45 - 13h30"></div></div><div class="form-row"><div><label for="scheduleLocation">Lieu</label><input id="scheduleLocation" required placeholder="Salle polyvalente"></div><div><label for="scheduleTag">Public</label><input id="scheduleTag" required placeholder="Ouvert a tous"></div></div><div class="form-actions"><button class="text-button hidden" id="cancelScheduleEdit" type="button">Annuler la modification</button><button class="primary-button" type="submit">Ajouter l'activite</button></div></form><div class="admin-list" id="scheduleAdminList"></div></div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
